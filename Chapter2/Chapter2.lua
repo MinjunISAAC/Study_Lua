@@ -309,3 +309,96 @@
         }
 
         print(#studentSet) --> 3
+
+
+-- 6. Function
+    -- 루아(Lua)에서 함수(function)은 '1급 값'이다.
+    -- 다른 포스팅에서도 설명한 적이 있지만 '1급 값'은 'OO을 일반 값처럼 사용 가능'한 특징을 가지고 있다. 
+    -- 즉, 루아(Lua)에서 함수(function)은 '1급 값', '1급 함수'이므로 변수가 될 수 있다.
+    -- 함수(Function)의 파라미터로 사용하거나 함수의 리턴값으로도 사용 가능하다. 
+    -- 물론 테이블(table)에서 확인했듯 테이블(table)의 요소로도 사용 가능하다.
+
+    function Add (num1, num2) 
+        local result = 0
+        result = num1 + num2
+        return result
+    end
+    
+    function Multiply (num1, num2)
+        local result = 0
+        result = num1 * num2
+        return result
+    end
+    
+    -- (num1 + num2) * num3 를 표현
+    print(Multiply(Add(2, 4), 10))       --> (2 + 4) * 10
+
+    -- 1. 익명 함수 (Anonymous Function)
+        -- 루아(Lua)에서 함수(Function)은 '익명 함수(Anonymous Function)' 기능을 지원한다.
+        -- '익명 함수(Anonymous Function)'은 '이름이 없는 함수'이며, 이름이 없다는 점을 제외하면 일반 함수와 큰 차이는 존재하지 않는다.
+    
+        Add      = function(num1, num2) return num1 + num2 end
+        Subtract = function(num1, num2) return num1 - num2 end
+        Multiply = function(num1, num2) return num1 * num2 end
+        Divide   = function(num1, num2) return num1 / num2 end
+
+        print(Add(4, 5))          --> 9
+        print(Subtract(4, 5))     --> -1
+        print(Multiply(4, 5))     --> 20
+        print(Divide(4, 5))       --> 0.8
+
+    -- 2. 가변 인자 함수(Variadic Function)
+        -- 루아(Lua)에서 함수(Function)의 매개변수로 '가변 인자'를 사용할 수 있으며 이를 '가변 인자 함수(Variadic Function)'라고 한다.
+        -- '가변 인자 함수'를 정의 하는 방법은 매개변수에 '...'을 사용하면 된다.
+        -- '가변 인자 함수'의 매개변수인 '...'는 함수 내부의 특별한 테이블(table)로 처리되어, 테이블(table)의 모든 인자에 접근 가능할 수 있다. 
+
+        function VariadicFunc(...)
+            for i, v in ipairs({...}) do
+                print(i, v)
+            end
+        end
+        
+        VariadicFunc(1, 2, 3, 4, 5)                        
+        VariadicFunc("one", "two", "three")                
+        VariadicFunc(1, 2, 3, 4, 5, "one", "two", "three") 
+        
+        --[[
+        1	1
+        2	2
+        3	3
+        4	4
+        5	5
+        1	one
+        2	two
+        3	three
+        1	1
+        2	2
+        3	3
+        4	4
+        5	5
+        6	one
+        7	two
+        8	three
+        ]]--
+
+    -- 3) 클로저(Closure)
+        -- 루아(Lua)에서는 클로저(Closure) 기능을 지원한다. 
+        -- 클로저(Closure)란 '함수와 비지역 변수들의 묶음'이다.
+
+        function OuterFunc(num)
+            local outerVar = num
+            return function(addNum) return (addNum + num) end --> [Pick]
+        end
+
+        local closure = OuterFunc(10)                         
+        print(closure(5))                                     --> [출력] 15
+
+        -- [Pick]에서 보면 return 값으로 함수를 넘겨주는데, 
+        -- 'OuterFunc'에는 'outerVar'이라는 '지역 변수'가 존재하고 리턴하는 
+        -- '익명 함수'에서 '외부 변수'인 'outerVar'을 참조하고 있는 것을 알 수 있다.
+        -- 이런 식으로 '내부 함수'와 '외부 변수'의 조합을 클로저(Closure)이라고 부른다.
+        -- 또한 이러한 클로저(Closure) 기능은 '1급 값'를 특징으로 가진 루아(Lua)에서 가능한 기술이다.
+
+    -- 4) 함수 반환
+        -- 다른 언어에서도 '함수 반환' 기능을 지원하고 있는 것과 같이 루아(Lua)에서도 '함수 반환' 기능을 제공하고 있다.
+        -- 그렇기에 '재귀 함수' 구현도 가능하다.
